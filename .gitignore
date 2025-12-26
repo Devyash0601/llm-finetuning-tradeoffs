@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+myenv/
+
+# OS
+.DS_Store
+
+# Data
+data/raw/
+data/processed/
+
+# Training outputs
+experiments/
+results/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# HuggingFace cache
+.cache/

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LLM Fine-Tuning Trade-offs</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <script defer src="/static/js/app.js"></script>
+</head>
+
+<body>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>LLM Fine-Tuning Trade-offs</h1>
+      <p class="subtitle">
+        Comparing Full Fine-Tuning and LoRA on a News Generation Task
+      </p>
+      <span class="scroll-indicator">↓ Scroll</span>
+    </div>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section class="section">
+    <h2>Project Overview</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Dataset</h3>
+        <p>AG News + CNN/DailyMail</p>
+        <p class="muted">Instruction-formatted news text</p>
+      </div>
+      <div class="card">
+        <h3>Models</h3>
+        <p>OPT-125M</p>
+        <p class="muted">Full FT vs LoRA (~1%)</p>
+      </div>
+      <div class="card">
+        <h3>Goal</h3>
+        <p>Quality vs Efficiency</p>
+        <p class="muted">Real-world PEFT trade-offs</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section class="section light">
+    <h2>Why This Matters</h2>
+    <p class="text">
+      Large language models are expensive to train and deploy. Parameter-efficient
+      fine-tuning methods like LoRA promise massive savings — but with performance trade-offs.
+      This demo makes those trade-offs visible and measurable.
+    </p>
+  </section>
+
+  <!-- ⚠️ WARNING / DISCLAIMER -->
+  <section class="section warning-section">
+    <div class="warning-box">
+      <strong>⚠️ Demo Notice</strong>
+      <p>
+        This system is trained exclusively on <b>news-style datasets</b> (AG News, CNN/DailyMail).
+        It is designed to demonstrate <b>fine-tuning trade-offs</b>, not factual question answering.
+        Outputs may be stylistically fluent but are <b>not guaranteed to be correct or up-to-date</b>.
+      </p>
+    </div>
+  </section>
+
+  <!-- TRY IT -->
+  <section class="section">
+    <h2>Try It Yourself</h2>
+    <textarea
+      id="prompt"
+      placeholder="e.g. What is happening in global economic news?"
+    ></textarea>
+    <button id="generate-btn" onclick="runInference()">Generate</button>
+
+    <div class="results">
+      <div class="result-card">
+        <h3>Full Fine-Tuned Model</h3>
+        <div class="output" id="full-output">—</div>
+        <span class="latency" id="full-latency"></span>
+      </div>
+
+      <div class="result-card">
+        <h3>LoRA Model (~1% params)</h3>
+        <div class="output" id="lora-output">—</div>
+        <span class="latency" id="lora-latency"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>
+      Demo comparing inference quality and latency between Full Fine-Tuning and LoRA.
+    </p>
+  </footer>
+</body>
+</html>
