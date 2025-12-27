@@ -1,129 +1,162 @@
-# 🧠 LLM Fine-Tuning Trade-offs: Full Fine-Tuning vs LoRA
+# LLM Fine-Tuning Trade-offs  
+### Full Fine-Tuning vs LoRA on OPT-125M
 
-This project presents a **hands-on comparison between Full Fine-Tuning and LoRA (Low-Rank Adaptation)** for large language models, focused on **news-style text generation**.
+This project demonstrates the **practical trade-offs** between **Full Fine-Tuning** and **Parameter-Efficient Fine-Tuning (LoRA)** for Large Language Models, using **OPT-125M** trained on **news-style instruction data**.
 
-Rather than building a production chatbot, the goal is to **demonstrate the real-world trade-offs between model quality, efficiency, and deployment cost** when fine-tuning LLMs.
-
----
-
-## 🔍 Motivation
-
-Fine-tuning large language models is expensive and often impractical at scale.  
-**Parameter-Efficient Fine-Tuning (PEFT)** techniques like **LoRA** significantly reduce training cost by updating only a small subset of parameters.
-
-This project explores:
-
-- How does output quality compare between Full Fine-Tuning and LoRA?
-- What are the differences in inference latency?
-- When is LoRA a practical alternative to full fine-tuning?
+A production-ready **FastAPI + Docker** application is deployed to **Hugging Face Spaces**, allowing real-time comparison of:
+- Output quality
+- Latency
+- Stability
+- Parameter efficiency
 
 ---
 
-## 📊 Overview
+## 🚀 Live Demo
 
-### Models
-- **Base Model:** `facebook/opt-125m`
-- **Fine-Tuning Strategies:**
-  - Full Fine-Tuning (100% parameters updated)
-  - LoRA Fine-Tuning (~1% trainable parameters)
-
-### Datasets
-- **AG News** – short-form news text
-- **CNN/DailyMail** – long-form news articles
-
-All data is converted into a **light instruction format** for generative training.
+👉 **Hugging Face Space:**  
+https://huggingface.co/spaces/devyash06/llm-finetuning-tradeoffs
 
 ---
 
-## ⚠️ Scope & Limitations
+## 🧠 Motivation
 
-> This system is trained **exclusively on news-style datasets**.  
-> It is designed to demonstrate **fine-tuning trade-offs**, not factual question answering.
+Large Language Models are expensive to train and deploy.
 
-- Outputs may be fluent but **not guaranteed to be factually correct**
-- The model does **not have access to real-time information**
-- Limitations are intentional to keep the comparison controlled and interpretable
+- **Full Fine-Tuning** updates all model parameters → best performance, highest cost  
+- **LoRA (Low-Rank Adaptation)** updates ~1% of parameters → massive savings, potential quality loss  
+
+This project makes these **trade-offs visible, measurable, and reproducible**.
 
 ---
 
-## 🏗️ Project Structure
+## 🧪 What This Project Shows
 
-llm-folder/
-├── src/
-│   ├── data/               # Dataset loading & preprocessing
-│   ├── models/             # Base model & LoRA adapters
-│   ├── training/           # Full FT & LoRA training loops
-│   ├── evaluation/         # Loss & perplexity comparison
-│   └── inference/          # FastAPI inference service
-│
-├── static/
-│   ├── css/                # UI styling
-│   └── js/                 # Frontend logic
-│
-├── templates/
-│   └── index.html          # Web UI layout
-│
-├── experiments/            # Saved trained models
-├── results/                # Evaluation outputs
+| Aspect | Full Fine-Tuning | LoRA |
+|------|-----------------|------|
+| Trainable Params | 100% | ~0.9% |
+| Training Cost | High | Low |
+| Inference Quality | Strong | Weaker / noisier |
+| Deployment Size | Large | Small |
+| Latency | Lower | Slightly higher |
+
+The **LoRA degradation is intentional and informative**, not a bug.
+
+---
+
+## ⚠️ Important Disclaimer
+
+> **Demo Notice**  
+> This system is trained exclusively on **news-style datasets** (AG News, CNN/DailyMail).  
+> It is designed to demonstrate **fine-tuning trade-offs**, **not factual question answering**.  
+> Outputs may be stylistically fluent but are **not guaranteed to be correct or up-to-date**.
+
+---
+
+## 🧱 Architecture
+.
+├── src
+│   ├── data            # Dataset processing
+│   ├── models          # Base model utilities
+│   ├── training        # Full FT & LoRA training scripts
+│   ├── inference       # FastAPI inference engine
+│   └── utils
+├── experiments
+│   └── news_instruction
+│       ├── full        # Full fine-tuned model
+│       └── lora        # LoRA adapter
+├── static              # Frontend assets
+├── templates           # HTML UI
+├── Dockerfile
+├── requirements.txt
 └── README.md
 
 ---
 
-## ⚙️ Training Setup
+## 📚 Datasets Used
 
-- **Context length:** 256 tokens  
-- **Optimizer:** AdamW  
-- **Batch size:** Tuned separately for Full FT and LoRA  
-- **Hardware:** Apple Silicon (M-series) CPU/GPU  
+- **AG News**
+- **CNN / DailyMail**
+- Instruction-style prompts generated from news articles
 
-Both models are trained on the **same data split** to ensure a fair comparison.
-
----
-
-## 📈 Evaluation Metrics
-
-- Training loss
-- Perplexity
-- Inference latency
-
-### Observations
-- Full Fine-Tuning achieves **lower loss and higher fluency**
-- LoRA trades some output quality for **significant efficiency gains**
-- Latency differences are visible during live inference
+All datasets are used **only for research and demonstration purposes**.
 
 ---
 
-## 🌐 Interactive Web Demo
+## 🏋️ Training
 
-The project includes a **custom-built web interface** (no Streamlit) that:
-
-- Explains the project before interaction
-- Allows side-by-side inference comparison
-- Displays latency for each model
-- Highlights parameter efficiency trade-offs
-
-The UI is served using **FastAPI + Jinja2 templates**.
-
----
-
-## 🚀 Running the Demo
-
-From the project root:
-
+### Full Fine-Tuning
 ```bash
-uvicorn src.inference.app:app --reload
-Open: http://localhost:8000
-
-## 🐳 Running with Docker
-
-The Docker image contains only application code.
-Trained models are mounted at runtime as volumes.
-
-### Run locally
-
+python -m src.training.train_full
+```
+### LoRA Fine-Tuning
 ```bash
-docker build -t llm-finetuning .
-docker run \
-  -p 8000:8000 \
-  -v $(pwd)/experiments:/app/experiments \
-  llm-finetuning
+python -m src.training.train_lora
+```
+
+### Local Inference
+python - << 'EOF'
+from src.inference.predict import InferenceEngine
+
+engine = InferenceEngine(
+    "facebook/opt-125m",
+    "experiments/news_instruction/lora",
+    is_lora=True
+)
+
+print(engine.generate("What is happening in global economic news?"))
+EOF
+
+## 🐳 Docker
+Build : docker build -t llm-finetuning .
+Run : docker run -p 8000:8000 llm-finetuning
+Then open:
+http://localhost:8000
+
+## ☁️ Deployment
+
+Hugging Face Spaces (Docker SDK)
+	•	Fully containerized FastAPI app
+	•	Models loaded from Hugging Face Hub
+	•	CPU-compatible deployment
+
+This avoids:
+	•	Railway build timeouts
+	•	Cold-start GPU costs
+	•	Cloud credential complexity
+
+🧠 Key Takeaways
+	•	LoRA is not a free lunch
+	•	Parameter efficiency comes with expressiveness loss
+	•	Full fine-tuning still matters for domain alignment
+	•	Deployment constraints heavily influence model choice
+
+⸻
+
+## 📌 Future Work
+	•	Quantitative evaluation (ROUGE / BLEU)
+	•	Memory profiling (VRAM / RAM)
+	•	Instruction-tuned base models
+	•	Multi-task LoRA adapters
+	•	GPU-backed inference comparison
+
+⸻
+
+## 👤 Author
+
+Devashish Komiya
+B.Tech AIML @ BIT Mesra
+Interested in:
+	•	LLM systems
+	•	Efficient fine-tuning
+	•	Applied ML research
+
+GitHub: https://github.com/Devyash0601
+Hugging Face: https://huggingface.co/devyash06
+
+⸻
+
+## ⭐ Acknowledgements
+	•	Hugging Face Transformers & PEFT
+	•	Meta OPT models
+	•	Open research on parameter-efficient fine-tuning
+
