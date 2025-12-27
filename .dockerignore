@@ -1,0 +1,25 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+myenv/
+venv/
+
+# Data
+data/raw/
+data/processed/
+
+# Training artifacts
+experiments/
+results/
+
+# Git
+.git/
+.gitignore
+
+# OS
+.DS_Store
+
+# HuggingFace cache
+.cache/

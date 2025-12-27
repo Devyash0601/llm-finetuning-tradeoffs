@@ -112,4 +112,18 @@ From the project root:
 
 ```bash
 uvicorn src.inference.app:app --reload
-http://localhost:8000
+Open: http://localhost:8000
+
+## 🐳 Running with Docker
+
+The Docker image contains only application code.
+Trained models are mounted at runtime as volumes.
+
+### Run locally
+
+```bash
+docker build -t llm-finetuning .
+docker run \
+  -p 8000:8000 \
+  -v $(pwd)/experiments:/app/experiments \
+  llm-finetuning

@@ -7,3 +7,6 @@ torch
 peft
 fastapi 
 uvicorn
+accelerate
+huggingface_hub
+jinja2

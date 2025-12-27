@@ -20,10 +20,16 @@ BASE_DIR = Path(__file__).resolve().parents[2]  # project root
 STATIC_DIR = BASE_DIR / "static"
 TEMPLATES_DIR = BASE_DIR / "templates"
 
-FULL_MODEL_PATH = BASE_DIR / "experiments" / "task_classification" / "full"
-LORA_MODEL_PATH = BASE_DIR / "experiments" / "task_classification" / "lora"
+
+# -------------------------------------------------------------------
+# Model configuration (Hugging Face)
+# -------------------------------------------------------------------
 
 BASE_MODEL = "facebook/opt-125m"
+
+# Instruction-tuned models (news domain)
+FULL_MODEL_ID = "devyash06/opt125m-news-instruction-full"
+LORA_MODEL_ID = "devyash06/opt125m-lora-news"
 
 
 # -------------------------------------------------------------------
@@ -32,7 +38,7 @@ BASE_MODEL = "facebook/opt-125m"
 
 app = FastAPI(
     title="LLM PEFT Comparison API",
-    description="Compare Full Fine-Tuning vs LoRA Inference",
+    description="Compare Full Fine-Tuning vs LoRA on an instruction-tuned news task",
 )
 
 
@@ -55,13 +61,13 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 full_engine = InferenceEngine(
     base_model_name=BASE_MODEL,
-    model_path=str(FULL_MODEL_PATH),
+    model_id=FULL_MODEL_ID,
     is_lora=False,
 )
 
 lora_engine = InferenceEngine(
     base_model_name=BASE_MODEL,
-    model_path=str(LORA_MODEL_PATH),
+    model_id=LORA_MODEL_ID,
     is_lora=True,
 )
 
@@ -72,7 +78,7 @@ lora_engine = InferenceEngine(
 
 class InferenceRequest(BaseModel):
     text: str
-    max_new_tokens: int = 50
+    max_new_tokens: int = 80
 
 
 # -------------------------------------------------------------------

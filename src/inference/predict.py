@@ -25,7 +25,24 @@ def clean_text(text: str) -> str:
 
 
 class InferenceEngine:
-    def __init__(self, base_model_name: str, model_path: str, is_lora: bool = False):
+    def __init__(
+        self,
+        base_model_name: str,
+        model_id: str,
+        is_lora: bool = False
+    ):
+        """
+        Parameters
+        ----------
+        base_model_name : str
+            Base model architecture (e.g. facebook/opt-125m)
+        model_id : str
+            Hugging Face model repo ID
+            - Full FT: devyash06/opt125m-full-ft
+            - LoRA:    devyash06/opt125m-lora-news
+        is_lora : bool
+            Whether to load a LoRA adapter on top of the base model
+        """
         self.device = get_device()
 
         # Tokenizer
@@ -33,16 +50,30 @@ class InferenceEngine:
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        # Base model
-        base_model = AutoModelForCausalLM.from_pretrained(base_model_name)
+        # Choose dtype safely
+        torch_dtype = (
+            torch.float16 if self.device != "cpu" else torch.float32
+        )
+
+        # Load base model
+        base_model = AutoModelForCausalLM.from_pretrained(
+            base_model_name,
+            torch_dtype=torch_dtype
+        )
 
         # Load fine-tuned weights
         if is_lora:
-            print("Loading LoRA-adapted model...")
-            self.model = PeftModel.from_pretrained(base_model, model_path)
+            print("Loading LoRA adapter from Hugging Face...")
+            self.model = PeftModel.from_pretrained(
+                base_model,
+                model_id
+            )
         else:
-            print("Loading full fine-tuned model...")
-            self.model = AutoModelForCausalLM.from_pretrained(model_path)
+            print("Loading full fine-tuned model from Hugging Face...")
+            self.model = AutoModelForCausalLM.from_pretrained(
+                model_id,
+                torch_dtype=torch_dtype
+            )
 
         self.model.to(self.device)
         self.model.eval()
@@ -53,7 +84,7 @@ class InferenceEngine:
         Same prompt for both models → fair comparison.
         """
         return (
-            "Answer the following prompt as clearly and concisely as possible.\n\n"
+            "Answer the following news-related prompt clearly and concisely.\n\n"
             f"Prompt: {text}\n\n"
             "Answer:"
         )
