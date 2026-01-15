@@ -55,7 +55,8 @@ The **LoRA degradation is intentional and informative**, not a bug.
 ## 🧱 Architecture
 .
 ├── src
-│   ├── data            # Dataset processing
+│   
+ ├── data            # Dataset processing
 │   ├── models          # Base model utilities
 │   ├── training        # Full FT & LoRA training scripts
 │   ├── inference       # FastAPI inference engine
